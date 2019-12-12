@@ -1,13 +1,147 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="./static/style.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <meta charset="UTF-8">
-    <title>BookRec</title>
-    <script type="text/javascript" src="./static/index.js"></script>
+    <title>ReadingLamp</title>
 </head>
 <body>
-<h1>Book Rec</h1>
-<p>Hello, yee!</p>
+<nav class="navbar navbar-inverse">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+                    data-target="#navbarCollapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+        </div>
 
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="nav navbar-nav">
+                <li><a href="#homeTab" data-toggle="tab" id="homeIcon"
+                       title="Go to the home page"><b>ReadingLamp</b></a>
+                </li>
+                <li><a href="#homeTab" data-toggle="tab" id="homeLink" title="Go to the home page"><span
+                        class="glyphicon glyphicon-home"></span> Home</a></li>
+                <li><a href="#recsTab" data-toggle="tab" id="recsLink" title="Go to my recommendations"><span
+                        class="glyphicon glyphicon-book"></span> My
+                    recommendations</a></li>
+                <li><a href="#rateTab" data-toggle="tab" id="recsLink" title="Make ratings!"><span
+                        class="glyphicon glyphicon-star"></span> Find & Rate books</a></li>
+                <li><a href="#loginTab" data-toggle="tab" id="loginLink" title="Log In!"><span id="loggedIcon"
+                                                                                               class="glyphicon glyphicon-log-in"></span>
+                    Log in</a></li>
+                <li><a href="#createAccountTab" data-toggle="tab" id="loginLink" title="Create a new account!"><span
+                        class="glyphicon glyphicon-lamp"></span> Create a new account</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+<div class="tab-content container">
+    <div id="homeTab" class="tab-pane fade in active">
+        <div class="row">
+            <h3>BookRec.</h3>
+            <p class="loggedOut">You must <a href="#loginTab" data-toggle="tab">log in</a> or <a
+                    href="#createAccountTab" data-toggle="tab">create a new account</a> before being able to access
+                personalized recommendations.</p>
+            <p class="loggedIn">You have logged in! You can now interact with tasks and mark them as done.</p>
+        </div>
+    </div>
+    <div id="recsTab" class="tab-pane fade">
+        <div class="row">
+            <h3>BookRec.</h3>
+            <p class="loggedOut">You must <a href="#loginTab" data-toggle="tab">log in</a> or <a
+                    href="#createAccountTab" data-toggle="tab">create a new account</a> before being able to access
+                personalized recommendations. In the meantime, here are some books enjoyed by <i>everyone</i>!</p>
+            <div id="recsTable">
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>Book Title</th>
+                        <th>Book ID</th>
+                        <th>Average rating</th>
+                        <th>Total ratings</th>
+                    </tr>
+                    </thead>
+                    <tbody id="userTableBody">
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div id="rateTab" class="tab-pane fade">
+        <div class="row">
+            <h3>BookRec.</h3>
+            <p class="loggedOut">You must <a href="#loginTab" data-toggle="tab">log in</a> or <a
+                    href="#createAccountTab" data-toggle="tab">create an account</a> before being able to access
+                personalized recommendations. In the meantime, here are some books enjoyed by <i>everyone</i>!</p>
+            <form id="searchForm">
+                <div class="form-group">
+                    <label for="searchPattern">Pattern:</label>
+                    <input type="text" class="form-control" id="searchPattern" value="">
+                    <br>
+                    <button type="submit" class="btn btn-default">Submit</button>
+                </div>
+            </form>
+            <div id="searchResults">
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>Book Title</th>
+                        <th>Book ID</th>
+                        <th>Average rating</th>
+                        <th>Total ratings</th>
+                    </tr>
+                    </thead>
+                    <tbody id="userTableBody">
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div id="createAccountTab" class="tab-pane fade">
+        <div class="container col-sm-9">
+            <h3>Create an account</h3>
+            <p>Enter an integer user ID for a new account.</p>
+            <form id="createAccountForm">
+                <div class="form-group">
+                    <label for="user_idField">User ID:</label>
+                    <input type="number" class="form-control" id="user_idField" value="">
+                    <br>
+                    <button type="submit" class="btn btn-default">Submit</button>
+                </div>
+            </form>
+            <br>
+            <p id="failedCreationText" style="color:red">Unavailable or invalid user ID.</p>
+        </div>
+    </div>
+    <div id="loginTab" class="tab-pane fade">
+        <div class="container col-sm-9">
+            <h3>Login</h3>
+            <p class="loggedOut">Please enter your integer user ID.</p>
+            <p class="loggedIn">Log into another account - enter the desired integer user ID.</p>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="user_idField">User ID:</label>
+                    <input type="number" class="form-control" id="user_idField" value="">
+                    <br>
+                    <button type="submit" class="btn btn-default">Submit</button>
+                </div>
+            </form>
+            <br>
+            <p id="failedLoginText" style="color:red">Invalid username/password pair. Please try again.</p>
+        </div>
+    </div>
+</div>
+
+<script src="./static/index.js"></script>
 </body>
 </html>
