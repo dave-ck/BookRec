@@ -133,6 +133,13 @@ function fill_history(json_obj) {
                 console.log("Rating updated: " + status);
                 refresh_history();
             });
+        });
+        $("#delRating" + book_id).on('click', function () {
+            console.log("submitted");
+            $.post("./delete/" + uid + '/' + book_id, function (status) {
+                console.log("Rating updated: " + status);
+                refresh_history();
+            });
         })
     }
     if (empty) {
