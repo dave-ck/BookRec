@@ -127,8 +127,10 @@ def pattern_matches(user_id, pattern, num_matches=5):
     global b_df, r_df
     # if there is no information to base recommendations off of for this user
     user_data = r_df[r_df.user_id == user_id]
-    user_full = pd.concat([user_data, b_df], axis=1, sort=False)
-    # retrieve ratings for each
+    print(user_data['book_id'])
+    user_full = pd.merge(b_df, user_data, how='left', on='book_id', sort=False)
+    print(user_full['book_id'])
+    print(user_full)
     user_full = user_full.loc[:, ~user_full.columns.duplicated()]
     return user_full[user_full.title.str.contains(pattern)].to_json()
 
@@ -136,4 +138,4 @@ def pattern_matches(user_id, pattern, num_matches=5):
 # remove_rating(2, 2318)
 recalculate()
 # print(recommend_books(user_id=2, num_recommendations=10))
-#
+print(pattern_matches(1, "tree", 20))
