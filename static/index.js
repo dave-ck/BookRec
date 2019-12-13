@@ -61,17 +61,7 @@ function setup() {
     $('#loginLink').on('click', function () {
         eraseCookie('uid');
         uid = null;
-        console.log("logging out");
         logged_cleanup();
-    });
-    $('#createAccountForm').on('submit', function (formOut) {
-        formOut.preventDefault();
-        console.log("submitted");
-        let uid = this.elements[0].value;
-        $.post("./createUser/" + uid, function (status) {
-            console.log('yeet');
-            console.log("Add person status:" + status);
-        });
     });
     $('#recsLink').on('click', refresh_recs);
     $('#myRatingsLink').on('click', refresh_history);
@@ -83,13 +73,11 @@ function setup() {
 
 function refresh_search(pattern) {
     $.get('/search/' + uid + '/' + pattern, function (response) {
-        console.log("Refreshing search results' table with:" + response);
         fill_search(response, pattern);
     });
 }
 
 function refresh_recs() {
-    console.log("Loading recommendations for uid " + uid + "...");
     $.get("./getrecommendations/" + uid, function (response) {
         fill_recs(response);
     });
@@ -97,7 +85,6 @@ function refresh_recs() {
 }
 
 function refresh_history() {
-    console.log("Loading history for uid " + uid + "...");
     $.get("./gethistory/" + uid, function (response) {
         fill_history(response);
     });
@@ -105,7 +92,6 @@ function refresh_history() {
 
 function fill_history(json_obj) {
     let obj = JSON.parse(json_obj);
-    console.log(obj);
     let htmlContents = "";
     let empty = true;
     for (let index in obj.book_id) {
@@ -138,17 +124,13 @@ function fill_history(json_obj) {
         let book_id = obj.book_id[index];
         $("#histRatingForm" + book_id).on('submit', function (formOut) {
             formOut.preventDefault();
-            console.log("submitted");
             let rating = this.elements[0].value;
             $.post("./rate/" + uid + '/' + book_id + '/' + rating, function (status) {
-                console.log("Rating updated: " + status);
                 refresh_history();
             });
         });
         $("#delRating" + book_id).on('click', function () {
-            console.log("submitted");
             $.post("./delete/" + uid + '/' + book_id, function (status) {
-                console.log("Rating updated: " + status);
                 refresh_history();
             });
         })
@@ -166,7 +148,6 @@ function fill_history(json_obj) {
 
 function fill_recs(json_obj) {
     let obj = JSON.parse(json_obj);
-    console.log(obj);
     let htmlContents = "";
     for (let index in obj.book_id) {
         let title = obj.title[index];
@@ -191,10 +172,8 @@ function fill_recs(json_obj) {
         let book_id = obj.book_id[index];
         $("#recsRatingForm" + book_id).on('submit', function (formOut) {
             formOut.preventDefault();
-            console.log("submitted");
             let rating = this.elements[0].value;
             $.post("./rate/" + uid + '/' + book_id + '/' + rating, function (status) {
-                console.log("Rating updated: " + status);
                 refresh_recs();
             });
         })
@@ -203,16 +182,13 @@ function fill_recs(json_obj) {
 
 function fill_search(json_obj, pattern) {
     let obj = JSON.parse(json_obj);
-    console.log(obj);
     let htmlContents = "";
     let empty = true;
     for (let index in obj.book_id) {
         empty = false;
         let title = obj.title[index];
         let book_id = obj.book_id[index];
-        console.log("From JSON:" + obj.average_rating[index]);
         let avgRating = obj.average_rating[index] ? obj.average_rating[index].toFixed(2) : "n/a";
-        console.log("Processed:" + avgRating);
         let totalRatings = obj.ratings_count[index];
         let userRating = obj.rating[index];
         let item_html = "<tr>" +
@@ -233,11 +209,8 @@ function fill_search(json_obj, pattern) {
         let book_id = obj.book_id[index];
         $("#searchRatingForm" + book_id).on('submit', function (formOut) {
             formOut.preventDefault();
-            console.log("submitted");
             let rating = this.elements[0].value;
             $.post("./rate/" + uid + '/' + book_id + '/' + rating, function (status) {
-                console.log("Rating updated: " + status);
-                console.log("Calling for update using pattern: " + pattern);
                 refresh_search(pattern);
             });
         })
@@ -255,7 +228,6 @@ function fill_search(json_obj, pattern) {
 
 function logged_cleanup() {
     let uid = readCookie('uid');
-    console.log('uid is ' + uid + ' - logged cleanup call');
     if (uid == null) {
         $('.loggedIn').hide();
         $('.loggedOut').show();
@@ -270,4 +242,3 @@ function logged_cleanup() {
 
 window.onload = setup();
 
-console.log("finished js");

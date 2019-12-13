@@ -90,11 +90,9 @@ def add_rating(uid, book_id, user_rating):
     ratings_row = {'book_id': book_id, 'rating': user_rating, 'user_id': uid}
     r_df = r_df.append(ratings_row, ignore_index=True)
     old_avg = unwrap(b_df.loc[b_df.book_id == book_id, 'average_rating'])
-    print("old_avg:", old_avg)
     if np.isnan(old_avg):
         old_avg = 0
     old_count = unwrap(b_df.loc[b_df.book_id == book_id, 'ratings_count'])
-    print("old_count:", old_count)
     b_df.loc[b_df.book_id == book_id, 'ratings_' + str(user_rating)] += 1  # increment the count for the rating
     b_df.loc[b_df.book_id == book_id, 'ratings_count'] += 1  # increment the count for the rating
     new_avg = (user_rating + old_count * old_avg) / (old_count + 1)
@@ -112,20 +110,11 @@ def rating_exists(uid, book_id):
 
 def remove_rating(uid, book_id):
     global b_df, r_df, recs_up_to_date
-    # if not rating_exists(uid, book_id):
-    #     print("Rating didn't exist: ({}, {})".format(uid, book_id))
-    #     return
     # find the old rating so b_df can be appropriately updated
     if not rating_exists(uid, book_id):
-        print("Rating already non-existant: uid{}, book_id{}".format(uid, book_id))
         return
-    print("RDF global")
-    print(r_df)
-    print("RDF zoomd, uid=", uid)
-    print(r_df[(r_df['user_id'] == uid)])
     user_rating = unwrap(r_df.loc[(r_df['user_id'] == uid) & (r_df['book_id'] == book_id), 'rating'])
     r_df = r_df[(r_df['user_id'] != uid) | (r_df['book_id'] != book_id)]
-    print("Rating to remove:", user_rating)
     old_avg = unwrap(b_df.loc[b_df.book_id == book_id, 'average_rating'])
     old_count = unwrap(b_df.loc[b_df.book_id == book_id, 'ratings_count'])
     b_df.loc[b_df.book_id == book_id, 'ratings_' + str(user_rating)] -= 1  # decrement the count for the rating
@@ -150,12 +139,4 @@ def pattern_matches(user_id, pattern, num_matches=50):
 recalculate()
 recs_up_to_date = True
 
-print(pattern_matches(2, "The Martian"))
-print("141:")
-print(unrated(141))
-print("637:")
-print(unrated(637))
-add_rating(2, 141, 5)
-print("141:")
 
-print(pattern_matches(2, "The Martian"))
