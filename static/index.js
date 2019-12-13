@@ -105,15 +105,13 @@ function refresh_history() {
 function fill_history(json_obj) {
     let obj = JSON.parse(json_obj);
     console.log(obj);
-    let len = obj['book_id'].length;
-    console.log(len);
     let htmlContents = "";
     let empty = true;
     for (let index in obj.book_id) {
         empty = false;
         let title = obj.title[index];
         let book_id = obj.book_id[index];
-        let avgRating = obj.average_rating[index];
+        let avgRating = obj.average_rating[index] || 0;
         let totalRatings = obj.ratings_count[index];
         let userRating = obj.rating[index];
         let item_html = "<tr>" +
@@ -122,7 +120,7 @@ function fill_history(json_obj) {
             "<td>" + avgRating.toFixed(2) + "</td>" +
             "<td>" + totalRatings + "</td>" +
             "<td>" +
-            "   <form id='ratingForm" + book_id + "'>" +
+            "   <form id='histRatingForm" + book_id + "'>" +
             "       <input type=\"number\" min=\"1\" max=\"5\" id='ratingField" + book_id + "' value='" + userRating + "'>" +
             "   </form>" +
             "</td>" +
@@ -137,7 +135,7 @@ function fill_history(json_obj) {
     $('#ratingsTableBody').html(htmlContents);
     for (let index in obj.book_id) {
         let book_id = obj.book_id[index];
-        $("#ratingForm" + book_id).on('submit', function (formOut) {
+        $("#histRatingForm" + book_id).on('submit', function (formOut) {
             formOut.preventDefault();
             console.log("submitted");
             let rating = this.elements[0].value;
@@ -168,8 +166,6 @@ function fill_history(json_obj) {
 function fill_recs(json_obj) {
     let obj = JSON.parse(json_obj);
     console.log(obj);
-    let len = obj['book_id'].length;
-    console.log(len);
     let htmlContents = "";
     for (let index in obj.book_id) {
         let title = obj.title[index];
@@ -182,7 +178,7 @@ function fill_recs(json_obj) {
             "<td>" + avgRating.toFixed(2) + "</td>" +
             "<td>" + totalRatings + "</td>" +
             "<td>" +
-            "   <form id='ratingForm" + book_id + "'>" +
+            "   <form id='recsRatingForm" + book_id + "'>" +
             "       <input type=\"number\" min=\"1\" max=\"5\" id='ratingField" + book_id + "' value=''>" +
             "   </form>" +
             "</td>" +
@@ -192,7 +188,7 @@ function fill_recs(json_obj) {
     $('#recsTableBody').html(htmlContents);
     for (let index in obj.book_id) {
         let book_id = obj.book_id[index];
-        $("#ratingForm" + book_id).on('submit', function (formOut) {
+        $("#recsRatingForm" + book_id).on('submit', function (formOut) {
             formOut.preventDefault();
             console.log("submitted");
             let rating = this.elements[0].value;
@@ -207,8 +203,6 @@ function fill_recs(json_obj) {
 function fill_search(json_obj, pattern) {
     let obj = JSON.parse(json_obj);
     console.log(obj);
-    let len = obj['book_id'].length;
-    console.log(len);
     let htmlContents = "";
     let empty = true;
     for (let index in obj.book_id) {
@@ -224,7 +218,7 @@ function fill_search(json_obj, pattern) {
             "<td>" + avgRating.toFixed(2) + "</td>" +
             "<td>" + totalRatings + "</td>" +
             "<td>" +
-            "   <form id='ratingForm" + book_id + "'>" +
+            "   <form id='searchRatingForm" + book_id + "'>" +
             "       <input type=\"number\" min=\"1\" max=\"5\" id='ratingField" + book_id + "' value='"+userRating+"'>" +
             "   </form>" +
             "</td>" +
@@ -234,7 +228,7 @@ function fill_search(json_obj, pattern) {
     $('#searchResultsTableBody').html(htmlContents);
     for (let index in obj.book_id) {
         let book_id = obj.book_id[index];
-        $("#ratingForm" + book_id).on('submit', function (formOut) {
+        $("#searchRatingForm" + book_id).on('submit', function (formOut) {
             formOut.preventDefault();
             console.log("submitted");
             let rating = this.elements[0].value;

@@ -117,7 +117,7 @@
                     <label for="searchPattern">Pattern: </label>
                     <input type="text" class="form-control" id="searchPattern" value="">
                     <br>
-                    <button type="submit" class="btn btn-default">Submit</button>
+                    <button type="submit" class="btn btn-default">Search</button>
                 </div>
             </form>
             <p id="emptySearchMessage">There don't appear to be any results for your search. Check your spelling, or try
@@ -143,12 +143,12 @@
     <div id="loginTab" class="tab-pane fade">
         <div class="container col-sm-9">
             <h3>Login</h3>
-            <p class="loggedOut">Please enter your integer user ID.</p>
-            <p class="loggedIn">Log into another account - enter the desired integer user ID.</p>
+            <p class="loggedOut">Please enter your 3-digit user ID.</p>
+            <p class="loggedIn">Log into another account - a 3-digit user ID.</p>
             <form id="loginForm">
                 <div class="form-group">
                     <label for="user_idField">User ID:</label>
-                    <input type="number" class="form-control" id="user_idField" value="">
+                    <input type="number" min="0" max="999" class="form-control" id="user_idField" value="">
                     <br>
                     <button type="submit" class="btn btn-default">Submit</button>
                 </div>

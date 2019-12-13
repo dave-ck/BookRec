@@ -29,7 +29,7 @@ b_df = pd.DataFrame(books_data,
 
 b_df['book_id'] = b_df['book_id'].apply(pd.to_numeric)
 b_df['ratings_count'] = b_df['ratings_count'].apply(pd.to_numeric)
-
+preds_df = None
 
 def recalculate():
     global preds_df, r_df
@@ -55,6 +55,10 @@ def user_rating_history(user_id):
 
 # adapted from https://beckernick.github.io/matrix-factorization-recommender/
 def recommend_books(user_id, num_recommendations=5):
+    global recs_up_to_date, b_df, preds_df
+    if not recs_up_to_date:
+        recalculate()
+        recs_up_to_date = True
     # if there is no information to base recommendations off of for this user
     if user_rating_history(user_id) == json.dumps({'book_id': {}}):
         # return the top-rated num_recommendations book which have at least 50 ratings
@@ -78,8 +82,8 @@ def recommend_books(user_id, num_recommendations=5):
 
 
 def add_rating(uid, book_id, user_rating):
-    global b_df, r_df
-    if user_rating not in [1,2,3,4,5]:
+    global b_df, r_df, recs_up_to_date
+    if user_rating not in [1, 2, 3, 4, 5]:
         raise ValueError("Ratings must be integers between 1 and 5 inclusive. {} given.".format(user_rating))
     remove_rating(uid, book_id)  # remove rating if it exists
     ratings_row = {'book_id': book_id, 'rating': user_rating, 'user_id': uid}
@@ -90,7 +94,7 @@ def add_rating(uid, book_id, user_rating):
     b_df.loc[b_df.book_id == book_id, 'ratings_count'] += 1  # increment the count for the rating
     new_avg = (user_rating + old_count * old_avg) / (old_count + 1)
     b_df.loc[b_df.book_id == book_id, 'average_rating'] = new_avg
-    recalculate()
+    recs_up_to_date = False
 
 
 def rating_exists(uid, book_id):
@@ -98,11 +102,14 @@ def rating_exists(uid, book_id):
 
 
 def remove_rating(uid, book_id):
-    global b_df, r_df
+    global b_df, r_df, recs_up_to_date
     # if not rating_exists(uid, book_id):
     #     print("Rating didn't exist: ({}, {})".format(uid, book_id))
     #     return
     # find the old rating so b_df can be appropriately updated
+    if not rating_exists(uid, book_id):
+        print("Rating already non-existant: uid{}, book_id{}".format(uid, book_id))
+        return
     print("RDF global")
     print(r_df)
     print("RDF zoomd, uid=", uid)
@@ -116,7 +123,7 @@ def remove_rating(uid, book_id):
     b_df.loc[b_df.book_id == book_id, 'ratings_count'] -= 1  # decrement the count for the rating
     new_avg = (-1 * user_rating + old_count * old_avg) / (old_count - 1)
     b_df.loc[b_df.book_id == book_id, 'average_rating'] = new_avg
-    recalculate()
+    recs_up_to_date = False
 
 
 def unwrap(pd_wrapped_value):
@@ -131,7 +138,5 @@ def pattern_matches(user_id, pattern, num_matches=5):
     return user_full[user_full.title.str.contains(pattern)].to_json()
 
 
-# remove_rating(2, 2318)
 recalculate()
-# print(recommend_books(user_id=2, num_recommendations=10))
-print(pattern_matches(1, "Thief", 20))
+recs_up_to_date = True
