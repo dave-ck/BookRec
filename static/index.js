@@ -46,10 +46,10 @@ let topN = [];
 let uid = readCookie('uid');
 
 function setup() {
-    $('#searchResults').hide();
     $('#emptyRatingsMessage').hide();
     $('#failedCreationText').hide();
     $('#failedLoginText').hide();
+    $('#searchResultsTable').hide();
     logged_cleanup();
     $('#loginForm').on('submit', function (formOut) {
         formOut.preventDefault();
@@ -74,6 +74,16 @@ function setup() {
     });
     $('#recsLink').on('click', refresh_recs);
     $('#myRatingsLink').on('click', refresh_history);
+    $('#searchForm').on('submit', function (formOut) {
+        let pattern = this.elements[0].value;
+        refresh_search(pattern);
+    })
+}
+
+function refresh_search(pattern) {
+    $.get('/search/' + uid + '/' + pattern, function (response) {
+        fill_search(response);
+    });
 }
 
 function refresh_recs() {
@@ -189,6 +199,55 @@ function fill_recs(json_obj) {
                 refresh_recs();
             });
         })
+    }
+}
+
+function fill_search(json_obj, pattern) {
+    let obj = JSON.parse(json_obj);
+    console.log(obj);
+    let len = obj['book_id'].length;
+    console.log(len);
+    let htmlContents = "";
+    let empty = true;
+    for (let index in obj.book_id) {
+        empty = false;
+        let title = obj.title[index];
+        let book_id = obj.book_id[index];
+        let avgRating = obj.average_rating[index] || 0; // switch to numeric if null
+        let totalRatings = obj.ratings_count[index];
+        let item_html = "<tr>" +
+            "<td>" + title + "</td>" +
+            "<td>" + book_id + "</td>" +
+            "<td>" + avgRating.toFixed(2) + "</td>" +
+            "<td>" + totalRatings + "</td>" +
+            "<td>" +
+            "   <form id='ratingForm" + book_id + "'>" +
+            "       <input type=\"number\" min=\"1\" max=\"5\" id='ratingField" + book_id + "' value=''>" +
+            "   </form>" +
+            "</td>" +
+            "</tr>";
+        htmlContents += item_html;
+    }
+    $('#searchResultsTableBody').html(htmlContents);
+    for (let index in obj.book_id) {
+        let book_id = obj.book_id[index];
+        $("#ratingForm" + book_id).on('submit', function (formOut) {
+            formOut.preventDefault();
+            console.log("submitted");
+            let rating = this.elements[0].value;
+            $.post("./rate/" + uid + '/' + book_id + '/' + rating, function (status) {
+                console.log("Rating updated: " + status);
+                refresh_search(pattern);
+            });
+        })
+    }
+    if (empty) {
+        $('#searchResultsTable').hide();
+        $('#emptySearchMessage').show();
+    }
+    else {
+        $('#searchResultsTable').show();
+        $('#emptySearchMessage').hide();
     }
 }
 

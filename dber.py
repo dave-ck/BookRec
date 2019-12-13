@@ -129,7 +129,7 @@ def pattern_matches(user_id, pattern, num_matches=5):
     user_data = r_df[r_df.user_id == user_id]
     user_full = pd.concat([user_data, b_df], axis=1, sort=False)
     # retrieve ratings for each
-    user_full = user_full.drop(columns='book_id')
+    user_full = user_full.loc[:, ~user_full.columns.duplicated()]
     return user_full[user_full.title.str.contains(pattern)].to_json()
 
 

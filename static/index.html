@@ -104,20 +104,22 @@
         </div>
     </div>
     <div id="rateTab" class="tab-pane fade">
-        <div class="row">
+        <div class="row" class="loggedIn">
             <h3>ReadingLamp.</h3>
             <p class="loggedOut">You must <a href="#loginTab" data-toggle="tab">log in</a> or <a
                     href="#createAccountTab" data-toggle="tab">create an account</a> before being able to access
                 personalized recommendations. In the meantime, here are some books enjoyed by <i>everyone</i>!</p>
             <form class="loggedIn" id="searchForm">
+                <p> This search will return exact hits for the pattern only, which are case sensitive: searching for
+                    'tree' will return 'The Street Lawyer' but not 'The Giving Tree'.</p>
                 <div class="form-group">
-                    <label for="searchPattern">Pattern:</label>
+                    <label for="searchPattern">Pattern: </label>
                     <input type="text" class="form-control" id="searchPattern" value="">
                     <br>
                     <button type="submit" class="btn btn-default">Submit</button>
                 </div>
             </form>
-            <div class="loggedIn" id="searchResults">
+            <div id="searchResultsTable">
                 <table class="table">
                     <thead>
                     <tr>
@@ -125,6 +127,7 @@
                         <th>Book ID</th>
                         <th>Average rating</th>
                         <th>Total ratings</th>
+                        <th>Your rating (updatable!)</th>
                     </tr>
                     </thead>
                     <tbody id="searchResultsTableBody">
