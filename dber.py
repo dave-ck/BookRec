@@ -31,6 +31,7 @@ b_df['book_id'] = b_df['book_id'].apply(pd.to_numeric)
 b_df['ratings_count'] = b_df['ratings_count'].apply(pd.to_numeric)
 preds_df = None
 
+
 def recalculate():
     global preds_df, r_df
     R_df = r_df.pivot(index='user_id', columns='book_id', values='rating').fillna(0)
@@ -89,12 +90,20 @@ def add_rating(uid, book_id, user_rating):
     ratings_row = {'book_id': book_id, 'rating': user_rating, 'user_id': uid}
     r_df = r_df.append(ratings_row, ignore_index=True)
     old_avg = unwrap(b_df.loc[b_df.book_id == book_id, 'average_rating'])
+    print("old_avg:", old_avg)
+    if np.isnan(old_avg):
+        old_avg = 0
     old_count = unwrap(b_df.loc[b_df.book_id == book_id, 'ratings_count'])
+    print("old_count:", old_count)
     b_df.loc[b_df.book_id == book_id, 'ratings_' + str(user_rating)] += 1  # increment the count for the rating
     b_df.loc[b_df.book_id == book_id, 'ratings_count'] += 1  # increment the count for the rating
     new_avg = (user_rating + old_count * old_avg) / (old_count + 1)
     b_df.loc[b_df.book_id == book_id, 'average_rating'] = new_avg
     recs_up_to_date = False
+
+
+def unrated(book_id):
+    return r_df.loc[(r_df['book_id'] == book_id)].empty
 
 
 def rating_exists(uid, book_id):
@@ -130,7 +139,7 @@ def unwrap(pd_wrapped_value):
     return pd_wrapped_value[pd_wrapped_value.keys()[0]]
 
 
-def pattern_matches(user_id, pattern, num_matches=5):
+def pattern_matches(user_id, pattern, num_matches=50):
     global b_df, r_df
     # if there is no information to base recommendations off of for this user
     user_data = r_df[r_df.user_id == user_id]
@@ -140,3 +149,13 @@ def pattern_matches(user_id, pattern, num_matches=5):
 
 recalculate()
 recs_up_to_date = True
+
+print(pattern_matches(2, "The Martian"))
+print("141:")
+print(unrated(141))
+print("637:")
+print(unrated(637))
+add_rating(2, 141, 5)
+print("141:")
+
+print(pattern_matches(2, "The Martian"))

@@ -83,7 +83,8 @@ function setup() {
 
 function refresh_search(pattern) {
     $.get('/search/' + uid + '/' + pattern, function (response) {
-        fill_search(response);
+        console.log("Refreshing search results' table with:" + response);
+        fill_search(response, pattern);
     });
 }
 
@@ -111,13 +112,13 @@ function fill_history(json_obj) {
         empty = false;
         let title = obj.title[index];
         let book_id = obj.book_id[index];
-        let avgRating = obj.average_rating[index] || 0;
+        let avgRating = obj.average_rating[index] ? obj.average_rating[index].toFixed(2) : "n/a";
         let totalRatings = obj.ratings_count[index];
         let userRating = obj.rating[index];
         let item_html = "<tr>" +
             "<td>" + title + "</td>" +
             "<td>" + book_id + "</td>" +
-            "<td>" + avgRating.toFixed(2) + "</td>" +
+            "<td>" + avgRating + "</td>" +
             "<td>" + totalRatings + "</td>" +
             "<td>" +
             "   <form id='histRatingForm" + book_id + "'>" +
@@ -170,12 +171,12 @@ function fill_recs(json_obj) {
     for (let index in obj.book_id) {
         let title = obj.title[index];
         let book_id = obj.book_id[index];
-        let avgRating = obj.average_rating[index] || 0; // switch to numeric if null
+        let avgRating = obj.average_rating[index] ? obj.average_rating[index].toFixed(2) : "n/a";
         let totalRatings = obj.ratings_count[index];
         let item_html = "<tr>" +
             "<td>" + title + "</td>" +
             "<td>" + book_id + "</td>" +
-            "<td>" + avgRating.toFixed(2) + "</td>" +
+            "<td>" + avgRating + "</td>" +
             "<td>" + totalRatings + "</td>" +
             "<td>" +
             "   <form id='recsRatingForm" + book_id + "'>" +
@@ -209,13 +210,15 @@ function fill_search(json_obj, pattern) {
         empty = false;
         let title = obj.title[index];
         let book_id = obj.book_id[index];
-        let avgRating = obj.average_rating[index] || 0; // switch to numeric if null
+        console.log("From JSON:" + obj.average_rating[index]);
+        let avgRating = obj.average_rating[index] ? obj.average_rating[index].toFixed(2) : "n/a";
+        console.log("Processed:" + avgRating);
         let totalRatings = obj.ratings_count[index];
         let userRating = obj.rating[index];
         let item_html = "<tr>" +
             "<td>" + title + "</td>" +
             "<td>" + book_id + "</td>" +
-            "<td>" + avgRating.toFixed(2) + "</td>" +
+            "<td>" + avgRating + "</td>" +
             "<td>" + totalRatings + "</td>" +
             "<td>" +
             "   <form id='searchRatingForm" + book_id + "'>" +
@@ -234,6 +237,7 @@ function fill_search(json_obj, pattern) {
             let rating = this.elements[0].value;
             $.post("./rate/" + uid + '/' + book_id + '/' + rating, function (status) {
                 console.log("Rating updated: " + status);
+                console.log("Calling for update using pattern: " + pattern);
                 refresh_search(pattern);
             });
         })
