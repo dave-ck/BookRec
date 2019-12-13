@@ -18,8 +18,6 @@ import pandas as pd
 
 ratings_data = pd.read_csv("./dataset/ratings.csv")
 books_data = pd.read_csv("./dataset/truncated_books.csv")
-# print(sorted(ratings_data))
-# print(sorted(books_data))
 
 r_df = pd.DataFrame(ratings_data, columns=['book_id', 'rating', 'user_id'], dtype=int)
 # remove unnecessary entries from books data, maintain only ratings information and book_id:title mapping
@@ -38,7 +36,7 @@ def recalculate():
     R = R_df.values
     user_ratings_mean = np.mean(R, axis=1)
     R_demeaned = R - user_ratings_mean.reshape(-1, 1)
-    k = min(*R_demeaned.shape, 51) - 1  # allow less than 50
+    k = 50
     U, sigma, Vt = svds(R_demeaned, k=k)
     sigma = np.diag(sigma)
     all_user_predicted_ratings = np.dot(np.dot(U, sigma), Vt) + user_ratings_mean.reshape(-1, 1)
@@ -58,11 +56,13 @@ def user_rating_history(user_id):
 def recommend_books(user_id, num_recommendations=5):
     global recs_up_to_date, b_df, preds_df
     if not recs_up_to_date:
+        print("Recalculating preds_df.")
         recalculate()
         recs_up_to_date = True
     # if there is no information to base recommendations off of for this user
     if user_rating_history(user_id) == json.dumps({'book_id': {}}):
         # return the top-rated num_recommendations book which have at least 50 ratings
+        print("Giving best {} list for user_id {}".format(num_recommendations, user_id))
         topN = b_df[b_df['ratings_count'] > 50].sort_values(['average_rating'], ascending=False).iloc[
                :num_recommendations, :-1]
         return topN.to_json()

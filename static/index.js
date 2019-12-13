@@ -66,6 +66,7 @@ function setup() {
     $('#recsLink').on('click', refresh_recs);
     $('#myRatingsLink').on('click', refresh_history);
     $('#searchForm').on('submit', function (formOut) {
+        formOut.preventDefault();
         let pattern = this.elements[0].value;
         refresh_search(pattern);
     })
@@ -198,7 +199,7 @@ function fill_search(json_obj, pattern) {
             "<td>" + totalRatings + "</td>" +
             "<td>" +
             "   <form id='searchRatingForm" + book_id + "'>" +
-            "       <input type=\"number\" min=\"1\" max=\"5\" id='ratingField" + book_id + "' value='"+userRating+"'>" +
+            "       <input type=\"number\" min=\"1\" max=\"5\" id='ratingField" + book_id + "' value='" + userRating + "'>" +
             "   </form>" +
             "</td>" +
             "</tr>";

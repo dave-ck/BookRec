@@ -29,7 +29,6 @@ def create_user(uid):
 @app.route('/getrecommendations/<uid>', methods=['GET'])
 def get_recommendations(uid):
     uid = int(uid)
-    print("Received a request for recommendations for uid ", uid)
     resp = dber.recommend_books(uid, num_recommendations=25)
     return resp
 
@@ -37,7 +36,6 @@ def get_recommendations(uid):
 @app.route('/gethistory/<uid>', methods=['GET'])
 def ratings_history(uid):
     uid = int(uid)
-    print("Received a request for history of uid ", uid)
     resp = dber.user_rating_history(uid)
     return resp
 
@@ -45,7 +43,6 @@ def ratings_history(uid):
 @app.route('/search/<uid>/<pattern>', methods=['GET'])
 def search_books(uid, pattern):
     uid = int(uid)
-    print("Received a request to search for" + pattern + " matches for uid ", uid)
     resp = dber.pattern_matches(uid, pattern, num_matches=25)
     return resp
 
