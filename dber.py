@@ -55,6 +55,7 @@ def user_rating_history(user_id):
 
 # adapted from https://beckernick.github.io/matrix-factorization-recommender/
 def recommend_books(user_id, num_recommendations=5):
+    # if there is no information to base recommendations off of for this user
     if user_rating_history(user_id) == json.dumps({'book_id': {}}):
         # return the top-rated num_recommendations book which have at least 50 ratings
         topN = b_df[b_df['ratings_count'] > 50].sort_values(['average_rating'], ascending=False).iloc[
@@ -76,31 +77,54 @@ def recommend_books(user_id, num_recommendations=5):
     return recommendations.to_json()
 
 
-def add_rating(uid, book_id, rating):
+def add_rating(uid, book_id, user_rating):
     global b_df, r_df
     if book_id not in range(1, 6):
         raise ValueError("Book IDs must be integers between 1 and 5 inclusive.")
-    ratings_row = {'book_id': book_id, 'rating': rating, 'user_id': uid}
+    if rating_exists(uid, book_id):
+        remove_rating(uid, book_id)
+    ratings_row = {'book_id': book_id, 'rating': user_rating, 'user_id': uid}
     r_df = r_df.append(ratings_row, ignore_index=True)
-    # todo: update the books df
+    old_avg = unwrap(b_df.loc[b_df.book_id == book_id, 'average_rating'])
+    old_count = unwrap(b_df.loc[b_df.book_id == book_id, 'ratings_count'])
+    b_df.loc[b_df.book_id == book_id, 'ratings_' + str(user_rating)] += 1  # increment the count for the rating
+    b_df.loc[b_df.book_id == book_id, 'ratings_count'] += 1  # increment the count for the rating
+    new_avg = (user_rating + old_count * old_avg) / (old_count + 1)
+    b_df.loc[b_df.book_id == book_id, 'average_rating'] = new_avg
+    recalculate()
+
+
+def rating_exists(uid, book_id):
+    return not r_df.loc[(r_df['user_id'] == uid) & (r_df['book_id'] == book_id), 'rating'].empty
 
 
 def remove_rating(uid, book_id):
     global b_df, r_df
+    if not rating_exists(uid, book_id):
+        return
     # find the old rating so b_df can be appropriately updated
     user_rating = unwrap(r_df.loc[(r_df['user_id'] != uid) | (r_df['book_id'] != book_id), 'rating'])
     old_avg = unwrap(b_df.loc[b_df.book_id == book_id, 'average_rating'])
     old_count = unwrap(b_df.loc[b_df.book_id == book_id, 'ratings_count'])
-
     b_df.loc[b_df.book_id == book_id, 'ratings_' + str(user_rating)] -= 1  # decrement the count for the rating
     b_df.loc[b_df.book_id == book_id, 'ratings_count'] -= 1  # decrement the count for the rating
-
-    r_df = r_df[(r_df['user_id'] != uid) | (r_df['book_id'] != book_id)]
-    # df = df[(df['lib'] != 'yee_2') & (df['qty1'] != '420')]
+    new_avg = (-1 * user_rating + old_count * old_avg) / (old_count - 1)
+    b_df.loc[b_df.book_id == book_id, 'average_rating'] = new_avg
+    recalculate()
 
 
 def unwrap(pd_wrapped_value):
     return pd_wrapped_value[pd_wrapped_value.keys()[0]]
+
+
+def pattern_matches(user_id, pattern, num_matches=5):
+    global b_df, r_df
+    # if there is no information to base recommendations off of for this user
+    user_data = r_df[r_df.user_id == user_id]
+    user_full = pd.concat([user_data, b_df], axis=1, sort=False)
+    # retrieve ratings for each
+    user_full = user_full.drop(columns='book_id')
+    return user_full[user_full.title.str.contains(pattern)].to_json()
 
 
 # remove_rating(2, 2318)
@@ -109,6 +133,6 @@ recalculate()
 #
 print(recommend_books(2, num_recommendations=2))
 print(user_rating_history(5))
-print(user_rating_history(19))
-print(recommend_books(5, num_recommendations=2))
-print(recommend_books(19, num_recommendations=2))
+
+print(b_df[b_df.title.str.contains("Potter")].to_json())
+print(pattern_matches(2, "Harry Potter", 15))
