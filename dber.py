@@ -79,8 +79,8 @@ def recommend_books(user_id, num_recommendations=5):
 
 def add_rating(uid, book_id, user_rating):
     global b_df, r_df
-    if book_id not in range(1, 6):
-        raise ValueError("Book IDs must be integers between 1 and 5 inclusive.")
+    if user_rating not in [1,2,3,4,5]:
+        raise ValueError("Ratings must be integers between 1 and 5 inclusive. {} given.".format(user_rating))
     if rating_exists(uid, book_id):
         remove_rating(uid, book_id)
     ratings_row = {'book_id': book_id, 'rating': user_rating, 'user_id': uid}
@@ -131,8 +131,4 @@ def pattern_matches(user_id, pattern, num_matches=5):
 recalculate()
 # print(recommend_books(user_id=2, num_recommendations=10))
 #
-print(recommend_books(2, num_recommendations=2))
-print(user_rating_history(5))
 
-print(b_df[b_df.title.str.contains("Potter")].to_json())
-print(pattern_matches(2, "Harry Potter", 15))

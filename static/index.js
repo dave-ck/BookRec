@@ -72,17 +72,19 @@ function setup() {
             console.log("Add person status:" + status);
         });
     });
-    $('#recsLink').on('click', function () {
-        console.log("Loading recommendations for uid " + uid + "...");
-        $.get("./getrecommendations/" + uid, function (response) {
-            fill_recs(response);
-        });
-    });
+    $('#recsLink').on('click', refresh_recs);
     $('#myRatingsLink').on('click', function () {
         console.log("Loading recommendations for uid " + uid + "...");
         $.get("./gethistory/" + uid, function (response) {
             fill_history(response);
         });
+    });
+}
+
+function refresh_recs() {
+    console.log("Loading recommendations for uid " + uid + "...");
+    $.get("./getrecommendations/" + uid, function (response) {
+        fill_recs(response);
     });
 }
 
@@ -124,7 +126,7 @@ function fill_history(json_obj) {
             console.log("New rating: " + this.elements[0].value)
         })
     }
-    if (empty){
+    if (empty) {
         $('#ratingsTable').hide();
         $('#emptyRatingsMessage').show();
     }
@@ -144,7 +146,7 @@ function fill_recs(json_obj) {
     for (let index in obj.book_id) {
         let title = obj.title[index];
         let book_id = obj.book_id[index];
-        let avgRating = obj.average_rating[index];
+        let avgRating = obj.average_rating[index] || 0; // switch to numeric if null
         let totalRatings = obj.ratings_count[index];
         let item_html = "<tr>" +
             "<td>" + title + "</td>" +
@@ -164,12 +166,14 @@ function fill_recs(json_obj) {
         let book_id = obj.book_id[index];
         $("#ratingForm" + book_id).on('submit', function (formOut) {
             formOut.preventDefault();
-            console.log("Rating form " + book_id + " submitted");
-            console.log("Old rating: " + null);
-            console.log("New rating: " + this.elements[0].value)
+            console.log("submitted");
+            let rating= this.elements[0].value;
+            $.post("./rate/" + uid + '/' + book_id + '/' + rating, function (status) {
+                console.log("Rating updated: "+status);
+                refresh_recs();
+            });
         })
     }
-
 }
 
 

@@ -46,7 +46,7 @@
 <div class="tab-content container">
     <div id="homeTab" class="tab-pane fade in active">
         <div class="row">
-            <h3>BookRec.</h3>
+            <h3>ReadingLamp.</h3>
             <p class="loggedOut">You must <a href="#loginTab" data-toggle="tab">log in</a> or <a
                     href="#createAccountTab" data-toggle="tab">create a new account</a> before being able to access
                 personalized recommendations.</p>
@@ -55,7 +55,7 @@
     </div>
     <div id="recsTab" class="tab-pane fade">
         <div class="row">
-            <h3>BookRec.</h3>
+            <h3>ReadingLamp.</h3>
             <p class="loggedOut">You must <a href="#loginTab" data-toggle="tab">log in</a> or <a
                     href="#createAccountTab" data-toggle="tab">create a new account</a> before being able to access
                 personalized recommendations!</p>
@@ -81,7 +81,7 @@
     </div>
     <div id="myRatingsTab" class="tab-pane fade">
         <div class="row">
-            <h3>BookRec.</h3>
+            <h3>ReadingLamp.</h3>
             <p id="emptyRatingsMessage">Hi! It seems you haven't rated any books yet. Go over to our recommendations
                 page to find some and rate them, they'll appear here!</p>
             <div id="ratingsTable" class="loggedIn">
@@ -104,11 +104,11 @@
     </div>
     <div id="rateTab" class="tab-pane fade">
         <div class="row">
-            <h3>BookRec.</h3>
+            <h3>ReadingLamp.</h3>
             <p class="loggedOut">You must <a href="#loginTab" data-toggle="tab">log in</a> or <a
                     href="#createAccountTab" data-toggle="tab">create an account</a> before being able to access
                 personalized recommendations. In the meantime, here are some books enjoyed by <i>everyone</i>!</p>
-            <form id="searchForm">
+            <form class="loggedIn" id="searchForm">
                 <div class="form-group">
                     <label for="searchPattern">Pattern:</label>
                     <input type="text" class="form-control" id="searchPattern" value="">
@@ -116,7 +116,7 @@
                     <button type="submit" class="btn btn-default">Submit</button>
                 </div>
             </form>
-            <div id="searchResults">
+            <div class="loggedIn" id="searchResults">
                 <table class="table">
                     <thead>
                     <tr>
@@ -126,7 +126,7 @@
                         <th>Total ratings</th>
                     </tr>
                     </thead>
-                    <tbody id="userTableBody">
+                    <tbody id="searchResultsTableBody">
 
                     </tbody>
                 </table>

@@ -29,19 +29,37 @@ def create_user(uid):
 @app.route('/getrecommendations/<uid>', methods=['GET'])
 def get_recommendations(uid):
     uid = int(uid)
-    print("Received a request for recommendations for uid", uid)
+    print("Received a request for recommendations for uid ", uid)
     resp = dber.recommend_books(uid, num_recommendations=25)
-    print(resp)
     return resp
 
 
 @app.route('/gethistory/<uid>', methods=['GET'])
-def get_history(uid):
+def ratings_history(uid):
     uid = int(uid)
-    print("Received a request for recommendations for uid", uid)
+    print("Received a request for history of uid ", uid)
     resp = dber.user_rating_history(uid)
-    print(resp)
     return resp
+
+
+@app.route('/search/<uid>/<pattern>', methods=['GET'])
+def search_books(uid, pattern):
+    uid = int(uid)
+    print("Received a request to search for" + pattern + " matches for uid ", uid)
+    resp = dber.pattern_matches(uid, pattern, num_matches=25)
+    return resp
+
+
+@app.route('/rate/<uid>/<book_id>/<rating>', methods=['POST'])
+def add_rating(uid, book_id, rating):
+    dber.add_rating(int(uid), int(book_id), int(rating))
+    return "accepted"
+
+
+@app.route('/delete/<uid>/<book_id>/', methods=['POST'])
+def del_rating(uid, book_id):
+    dber.remove_rating(uid, book_id)
+    return "accepted"
 
 
 if __name__ == '__main__':
