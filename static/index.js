@@ -50,6 +50,7 @@ function setup() {
     $('#failedCreationText').hide();
     $('#failedLoginText').hide();
     $('#searchResultsTable').hide();
+    $('#emptySearchMessage').hide();
     logged_cleanup();
     $('#loginForm').on('submit', function (formOut) {
         formOut.preventDefault();
@@ -91,6 +92,7 @@ function refresh_recs() {
     $.get("./getrecommendations/" + uid, function (response) {
         fill_recs(response);
     });
+    refresh_history();
 }
 
 function refresh_history() {
@@ -154,11 +156,11 @@ function fill_history(json_obj) {
     }
     if (empty) {
         $('#ratingsTable').hide();
-        $('#emptyRatingsMessage').show();
+        $('.emptyRatingsMessage').show();
     }
     else {
         $('#ratingsTable').show();
-        $('#emptyRatingsMessage').hide();
+        $('.emptyRatingsMessage').hide();
     }
 
 }
@@ -215,6 +217,7 @@ function fill_search(json_obj, pattern) {
         let book_id = obj.book_id[index];
         let avgRating = obj.average_rating[index] || 0; // switch to numeric if null
         let totalRatings = obj.ratings_count[index];
+        let userRating = obj.rating[index];
         let item_html = "<tr>" +
             "<td>" + title + "</td>" +
             "<td>" + book_id + "</td>" +
@@ -222,7 +225,7 @@ function fill_search(json_obj, pattern) {
             "<td>" + totalRatings + "</td>" +
             "<td>" +
             "   <form id='ratingForm" + book_id + "'>" +
-            "       <input type=\"number\" min=\"1\" max=\"5\" id='ratingField" + book_id + "' value=''>" +
+            "       <input type=\"number\" min=\"1\" max=\"5\" id='ratingField" + book_id + "' value='"+userRating+"'>" +
             "   </form>" +
             "</td>" +
             "</tr>";

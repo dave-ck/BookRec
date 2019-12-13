@@ -30,12 +30,12 @@
                 </li>
                 <li><a href="#homeTab" data-toggle="tab" id="homeLink" title="Go to the home page"><span
                         class="glyphicon glyphicon-home"></span> Home</a></li>
-                <li><a href="#recsTab" data-toggle="tab" id="recsLink" title="Go to my recommendations"><span
+                <li class="loggedIn"><a href="#recsTab" data-toggle="tab" id="recsLink" title="Go to my recommendations"><span
                         class="glyphicon glyphicon-book"></span> My
                     recommendations</a></li>
                 <li class="loggedIn"><a href="#rateTab" data-toggle="tab" id="recsLink" title="Make ratings!"><span
                         class="glyphicon glyphicon-search"></span> Find & Rate books</a></li>
-                <li><a href="#myRatingsTab" data-toggle="tab" id="myRatingsLink" title="View your ratings!"><span
+                <li class="loggedIn"><a href="#myRatingsTab" data-toggle="tab" id="myRatingsLink" title="View your ratings!"><span
                         class="glyphicon glyphicon-star"></span> My Ratings </a></li>
                 <li><a href="#loginTab" data-toggle="tab" id="loginLink" title="Log In!">
                     <span id="loggedIcon" class="glyphicon glyphicon-log-in"></span> Log in</a></li>
@@ -47,8 +47,7 @@
     <div id="homeTab" class="tab-pane fade in active">
         <div class="row">
             <h3>ReadingLamp.</h3>
-            <p class="loggedOut">You must <a href="#loginTab" data-toggle="tab">log in</a> or <a
-                    href="#createAccountTab" data-toggle="tab">create a new account</a> before being able to access
+            <p class="loggedOut">You must <a href="#loginTab" data-toggle="tab">log in</a> before being able to access
                 personalized recommendations.</p>
             <p class="loggedIn">You have logged in! You can now interact with tasks and mark them as done.</p>
         </div>
@@ -56,10 +55,9 @@
     <div id="recsTab" class="tab-pane fade">
         <div class="row">
             <h3>ReadingLamp.</h3>
-            <p class="loggedOut">You must <a href="#loginTab" data-toggle="tab">log in</a> or <a
-                    href="#createAccountTab" data-toggle="tab">create a new account</a> before being able to access
+            <p class="loggedOut">You must <a href="#loginTab" data-toggle="tab">log in</a> before being able to access
                 personalized recommendations!</p>
-            <p id="emptyRatingsMessage" class="loggedIn">Hi! It seems you haven't rated any books yet. So these
+            <p class="emptyRatingsMessage loggedIn">Hi! It seems you haven't rated any books yet. So these
                 recommendations aren't tailored to you(yet). Rate a few and watch them change!</p>
             <div id="recsTable" class="loggedIn">
                 <table class="table">
@@ -82,7 +80,10 @@
     <div id="myRatingsTab" class="tab-pane fade">
         <div class="row">
             <h3>ReadingLamp.</h3>
-            <p id="emptyRatingsMessage">Hi! It seems you haven't rated any books yet. Go over to our recommendations
+            <p class="loggedOut">You must <a href="#loginTab" data-toggle="tab">log in</a> before being able to access
+                your ratings!</p>
+            <p class="loggedIn emptyRatingsMessage">Hi! It seems you haven't rated any books yet. Go over to our
+                recommendations
                 page to find some and rate them, they'll appear here!</p>
             <div id="ratingsTable" class="loggedIn">
                 <table class="table">
@@ -119,6 +120,8 @@
                     <button type="submit" class="btn btn-default">Submit</button>
                 </div>
             </form>
+            <p id="emptySearchMessage">There don't appear to be any results for your search. Check your spelling, or try
+                a less restrictive input.</p>
             <div id="searchResultsTable">
                 <table class="table">
                     <thead>
@@ -135,22 +138,6 @@
                     </tbody>
                 </table>
             </div>
-        </div>
-    </div>
-    <div id="createAccountTab" class="tab-pane fade">
-        <div class="container col-sm-9">
-            <h3>Create an account</h3>
-            <p>Enter an integer user ID for a new account.</p>
-            <form id="createAccountForm">
-                <div class="form-group">
-                    <label for="user_idField">User ID:</label>
-                    <input type="number" class="form-control" id="user_idField" value="">
-                    <br>
-                    <button type="submit" class="btn btn-default">Submit</button>
-                </div>
-            </form>
-            <br>
-            <p id="failedCreationText" style="color:red">Unavailable or invalid user ID.</p>
         </div>
     </div>
     <div id="loginTab" class="tab-pane fade">
