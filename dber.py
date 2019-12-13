@@ -81,8 +81,7 @@ def add_rating(uid, book_id, user_rating):
     global b_df, r_df
     if user_rating not in [1,2,3,4,5]:
         raise ValueError("Ratings must be integers between 1 and 5 inclusive. {} given.".format(user_rating))
-    if rating_exists(uid, book_id):
-        remove_rating(uid, book_id)
+    remove_rating(uid, book_id)  # remove rating if it exists
     ratings_row = {'book_id': book_id, 'rating': user_rating, 'user_id': uid}
     r_df = r_df.append(ratings_row, ignore_index=True)
     old_avg = unwrap(b_df.loc[b_df.book_id == book_id, 'average_rating'])
@@ -100,10 +99,17 @@ def rating_exists(uid, book_id):
 
 def remove_rating(uid, book_id):
     global b_df, r_df
-    if not rating_exists(uid, book_id):
-        return
+    # if not rating_exists(uid, book_id):
+    #     print("Rating didn't exist: ({}, {})".format(uid, book_id))
+    #     return
     # find the old rating so b_df can be appropriately updated
-    user_rating = unwrap(r_df.loc[(r_df['user_id'] != uid) | (r_df['book_id'] != book_id), 'rating'])
+    print("RDF global")
+    print(r_df)
+    print("RDF zoomd, uid=", uid)
+    print(r_df[(r_df['user_id'] == uid)])
+    user_rating = unwrap(r_df.loc[(r_df['user_id'] == uid) & (r_df['book_id'] == book_id), 'rating'])
+    r_df = r_df[(r_df['user_id'] != uid) | (r_df['book_id'] != book_id)]
+    print("Rating to remove:", user_rating)
     old_avg = unwrap(b_df.loc[b_df.book_id == book_id, 'average_rating'])
     old_count = unwrap(b_df.loc[b_df.book_id == book_id, 'ratings_count'])
     b_df.loc[b_df.book_id == book_id, 'ratings_' + str(user_rating)] -= 1  # decrement the count for the rating
@@ -131,4 +137,3 @@ def pattern_matches(user_id, pattern, num_matches=5):
 recalculate()
 # print(recommend_books(user_id=2, num_recommendations=10))
 #
-

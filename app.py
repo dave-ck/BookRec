@@ -58,7 +58,7 @@ def add_rating(uid, book_id, rating):
 
 @app.route('/delete/<uid>/<book_id>/', methods=['POST'])
 def del_rating(uid, book_id):
-    dber.remove_rating(uid, book_id)
+    dber.remove_rating(int(uid), int(book_id))
     return "accepted"
 
 

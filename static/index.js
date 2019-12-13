@@ -73,18 +73,20 @@ function setup() {
         });
     });
     $('#recsLink').on('click', refresh_recs);
-    $('#myRatingsLink').on('click', function () {
-        console.log("Loading recommendations for uid " + uid + "...");
-        $.get("./gethistory/" + uid, function (response) {
-            fill_history(response);
-        });
-    });
+    $('#myRatingsLink').on('click', refresh_history);
 }
 
 function refresh_recs() {
     console.log("Loading recommendations for uid " + uid + "...");
     $.get("./getrecommendations/" + uid, function (response) {
         fill_recs(response);
+    });
+}
+
+function refresh_history() {
+    console.log("Loading history for uid " + uid + "...");
+    $.get("./gethistory/" + uid, function (response) {
+        fill_history(response);
     });
 }
 
@@ -112,18 +114,25 @@ function fill_history(json_obj) {
             "       <input type=\"number\" min=\"1\" max=\"5\" id='ratingField" + book_id + "' value='" + userRating + "'>" +
             "   </form>" +
             "</td>" +
+            "<td>" +
+            "   <a id='delRating" + book_id + "'>" +
+            "      <span id=\"loggedIcon\" style='font-size: 200%' class=\"glyphicon glyphicon-remove\"></span>" +
+            "   </a>" +
+            "</td>" +
             "</tr>";
         htmlContents += item_html;
     }
     $('#ratingsTableBody').html(htmlContents);
     for (let index in obj.book_id) {
         let book_id = obj.book_id[index];
-        let userRating = obj.rating[index];
         $("#ratingForm" + book_id).on('submit', function (formOut) {
             formOut.preventDefault();
-            console.log("Rating form " + book_id + " submitted");
-            console.log("Old rating: " + userRating);
-            console.log("New rating: " + this.elements[0].value)
+            console.log("submitted");
+            let rating = this.elements[0].value;
+            $.post("./rate/" + uid + '/' + book_id + '/' + rating, function (status) {
+                console.log("Rating updated: " + status);
+                refresh_history();
+            });
         })
     }
     if (empty) {
@@ -167,9 +176,9 @@ function fill_recs(json_obj) {
         $("#ratingForm" + book_id).on('submit', function (formOut) {
             formOut.preventDefault();
             console.log("submitted");
-            let rating= this.elements[0].value;
+            let rating = this.elements[0].value;
             $.post("./rate/" + uid + '/' + book_id + '/' + rating, function (status) {
-                console.log("Rating updated: "+status);
+                console.log("Rating updated: " + status);
                 refresh_recs();
             });
         })
