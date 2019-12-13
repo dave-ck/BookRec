@@ -1,3 +1,4 @@
+import json
 import os
 from scipy.sparse.linalg import svds
 import numpy as np
@@ -27,6 +28,7 @@ b_df = pd.DataFrame(books_data,
                              'ratings_4', 'ratings_5', 'ratings_count', 'authors'])
 
 b_df['book_id'] = b_df['book_id'].apply(pd.to_numeric)
+b_df['ratings_count'] = b_df['ratings_count'].apply(pd.to_numeric)
 
 
 def recalculate():
@@ -44,6 +46,8 @@ def recalculate():
 
 def user_rating_history(user_id):
     user_data = r_df[r_df.user_id == user_id]
+    if user_data.empty:
+        return json.dumps({'book_id': {}})  # return compact empty JSON
     user_full = (user_data.merge(b_df, how='left', left_on='book_id', right_on='book_id').
                  sort_values(['average_rating'], ascending=False))
     return user_full.to_json()
@@ -51,6 +55,11 @@ def user_rating_history(user_id):
 
 # adapted from https://beckernick.github.io/matrix-factorization-recommender/
 def recommend_books(user_id, num_recommendations=5):
+    if user_rating_history(user_id) == json.dumps({'book_id': {}}):
+        # return the top-rated num_recommendations book which have at least 50 ratings
+        topN = b_df[b_df['ratings_count'] > 50].sort_values(['average_rating'], ascending=False).iloc[
+               :num_recommendations, :-1]
+        return topN.to_json()
     user_row_number = user_id - 1  # UserID starts at 1, not 0
     sorted_user_predictions = preds_df.iloc[user_row_number].sort_values(ascending=False)
     user_data = r_df[r_df.user_id == user_id]
@@ -98,5 +107,8 @@ def unwrap(pd_wrapped_value):
 recalculate()
 # print(recommend_books(user_id=2, num_recommendations=10))
 #
-print(user_rating_history(2))
-
+print(recommend_books(2, num_recommendations=2))
+print(user_rating_history(5))
+print(user_rating_history(19))
+print(recommend_books(5, num_recommendations=2))
+print(recommend_books(19, num_recommendations=2))
