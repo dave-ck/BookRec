@@ -25,20 +25,20 @@
         <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="nav navbar-nav">
                 <li><a href="#homeTab" data-toggle="tab" id="homeIcon"
-                       title="Go to the home page"><b>ReadingLamp</b></a>
+                       title="Go to the home page"><span
+                        class="glyphicon glyphicon-lamp"></span><b> ReadingLamp</b></a>
                 </li>
                 <li><a href="#homeTab" data-toggle="tab" id="homeLink" title="Go to the home page"><span
                         class="glyphicon glyphicon-home"></span> Home</a></li>
                 <li><a href="#recsTab" data-toggle="tab" id="recsLink" title="Go to my recommendations"><span
                         class="glyphicon glyphicon-book"></span> My
                     recommendations</a></li>
-                <li><a href="#rateTab" data-toggle="tab" id="recsLink" title="Make ratings!"><span
-                        class="glyphicon glyphicon-star"></span> Find & Rate books</a></li>
-                <li><a href="#loginTab" data-toggle="tab" id="loginLink" title="Log In!"><span id="loggedIcon"
-                                                                                               class="glyphicon glyphicon-log-in"></span>
-                    Log in</a></li>
-                <li><a href="#createAccountTab" data-toggle="tab" id="loginLink" title="Create a new account!"><span
-                        class="glyphicon glyphicon-lamp"></span> Create a new account</a></li>
+                <li class="loggedIn"><a href="#rateTab" data-toggle="tab" id="recsLink" title="Make ratings!"><span
+                        class="glyphicon glyphicon-star-empty"></span> Find & Rate books</a></li>
+                <li><a href="#myRatingsTab" data-toggle="tab" id="myRatingsLink" title="View your ratings!"><span
+                        class="glyphicon glyphicon-star"></span> My Ratings </a></li>
+                <li><a href="#loginTab" data-toggle="tab" id="loginLink" title="Log In!">
+                    <span id="loggedIcon" class="glyphicon glyphicon-log-in"></span> Log in</a></li>
             </ul>
         </div>
     </div>
@@ -59,7 +59,7 @@
             <p class="loggedOut">You must <a href="#loginTab" data-toggle="tab">log in</a> or <a
                     href="#createAccountTab" data-toggle="tab">create a new account</a> before being able to access
                 personalized recommendations. In the meantime, here are some books enjoyed by <i>everyone</i>!</p>
-            <div id="recsTable">
+            <div id="recsTable" class="loggedIn">
                 <table class="table">
                     <thead>
                     <tr>
@@ -67,9 +67,33 @@
                         <th>Book ID</th>
                         <th>Average rating</th>
                         <th>Total ratings</th>
+                        <th>Your rating (updatable!)</th>
                     </tr>
                     </thead>
-                    <tbody id="userTableBody">
+                    <tbody id="recsTableBody">
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div id="myRatingsTab" class="tab-pane fade">
+        <div class="row">
+            <h3>BookRec.</h3>
+            <p id="emptyRatingsMessage">Hi! It seems you haven't rated any books yet. Go over to our recommendations
+                page to find some and rate them, they'll appear here!</p>
+            <div id="ratingsTable" class="loggedIn">
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>Book Title</th>
+                        <th>Book ID</th>
+                        <th>Average rating</th>
+                        <th>Total ratings</th>
+                        <th>Your rating (updatable!)</th>
+                    </tr>
+                    </thead>
+                    <tbody id="ratingsTableBody">
 
                     </tbody>
                 </table>

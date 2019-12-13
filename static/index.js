@@ -47,43 +47,145 @@ let uid = readCookie('uid');
 
 function setup() {
     $('#searchResults').hide();
+    $('#emptyRatingsMessage').hide();
     $('#failedCreationText').hide();
     $('#failedLoginText').hide();
-    let uid = readCookie('uid');
-    console.log('uid is ' + uid + ' - setup call');
-    if (uid == null) {
-        $('.loggedIn').hide();
-        // <li><a href="#loginTab" data-toggle="tab" id="loginLink" title="Log In!"></a></li>
-        $('#loginLink').html('<span id="loggedIcon" class="glyphicon glyphicon-log-in"></span> Log in');
-    }
-    else {
-        $('.loggedOut').hide();
-        $('#loginLink').html('<span id="loggedIcon" class="glyphicon glyphicon-log-out"></span> UID' + uid + '- Log out');
-    }
+    logged_cleanup();
     $('#loginForm').on('submit', function (formOut) {
         formOut.preventDefault();
         uid = this.elements[0].value;
         createCookie('uid', uid);
-        setup();
+        logged_cleanup();
     });
     $('#loginLink').on('click', function () {
         eraseCookie('uid');
         uid = null;
         console.log("logging out");
-        setup();
+        logged_cleanup();
     });
     $('#createAccountForm').on('submit', function (formOut) {
         formOut.preventDefault();
         console.log("submitted");
         let uid = this.elements[0].value;
-        $.post("./createUser", serialise({
-            uid: uid
-        }), function (status) {
+        $.post("./createUser/" + uid, function (status) {
             console.log('yeet');
             console.log("Add person status:" + status);
         });
-        // refresh/update loggedin status
     });
+    $('#recsLink').on('click', function () {
+        console.log("Loading recommendations for uid " + uid + "...");
+        $.get("./getrecommendations/" + uid, function (response) {
+            fill_recs(response);
+        });
+    });
+    $('#myRatingsLink').on('click', function () {
+        console.log("Loading recommendations for uid " + uid + "...");
+        $.get("./gethistory/" + uid, function (response) {
+            fill_history(response);
+        });
+    });
+}
+
+function fill_history(json_obj) {
+    let obj = JSON.parse(json_obj);
+    console.log(obj);
+    let len = obj['book_id'].length;
+    console.log(len);
+    let htmlContents = "";
+    let empty = true;
+    for (let index in obj.book_id) {
+        empty = false;
+        let title = obj.title[index];
+        let book_id = obj.book_id[index];
+        let avgRating = obj.average_rating[index];
+        let totalRatings = obj.ratings_count[index];
+        let userRating = obj.rating[index];
+        let item_html = "<tr>" +
+            "<td>" + title + "</td>" +
+            "<td>" + book_id + "</td>" +
+            "<td>" + avgRating.toFixed(2) + "</td>" +
+            "<td>" + totalRatings + "</td>" +
+            "<td>" +
+            "   <form id='ratingForm" + book_id + "'>" +
+            "       <input type=\"number\" min=\"1\" max=\"5\" id='ratingField" + book_id + "' value='" + userRating + "'>" +
+            "   </form>" +
+            "</td>" +
+            "</tr>";
+        htmlContents += item_html;
+    }
+    $('#ratingsTableBody').html(htmlContents);
+    for (let index in obj.book_id) {
+        let book_id = obj.book_id[index];
+        let userRating = obj.rating[index];
+        $("#ratingForm" + book_id).on('submit', function (formOut) {
+            formOut.preventDefault();
+            console.log("Rating form " + book_id + " submitted");
+            console.log("Old rating: " + userRating);
+            console.log("New rating: " + this.elements[0].value)
+        })
+    }
+    if (empty){
+        $('#ratingsTable').hide();
+        $('#emptyRatingsMessage').show();
+    }
+    else {
+        $('#ratingsTable').show();
+        $('#emptyRatingsMessage').hide();
+    }
+
+}
+
+function fill_recs(json_obj) {
+    let obj = JSON.parse(json_obj);
+    console.log(obj);
+    let len = obj['book_id'].length;
+    console.log(len);
+    let htmlContents = "";
+    for (let index in obj.book_id) {
+        let title = obj.title[index];
+        let book_id = obj.book_id[index];
+        let avgRating = obj.average_rating[index];
+        let totalRatings = obj.ratings_count[index];
+        let item_html = "<tr>" +
+            "<td>" + title + "</td>" +
+            "<td>" + book_id + "</td>" +
+            "<td>" + avgRating.toFixed(2) + "</td>" +
+            "<td>" + totalRatings + "</td>" +
+            "<td>" +
+            "   <form id='ratingForm" + book_id + "'>" +
+            "       <input type=\"number\" min=\"1\" max=\"5\" id='ratingField" + book_id + "' value=''>" +
+            "   </form>" +
+            "</td>" +
+            "</tr>";
+        htmlContents += item_html;
+    }
+    $('#recsTableBody').html(htmlContents);
+    for (let index in obj.book_id) {
+        let book_id = obj.book_id[index];
+        $("#ratingForm" + book_id).on('submit', function (formOut) {
+            formOut.preventDefault();
+            console.log("Rating form " + book_id + " submitted");
+            console.log("Old rating: " + null);
+            console.log("New rating: " + this.elements[0].value)
+        })
+    }
+
+}
+
+
+function logged_cleanup() {
+    let uid = readCookie('uid');
+    console.log('uid is ' + uid + ' - logged cleanup call');
+    if (uid == null) {
+        $('.loggedIn').hide();
+        $('.loggedOut').show();
+        $('#loginLink').html('<span id="loggedIcon" class="glyphicon glyphicon-log-in"></span> Log in');
+    }
+    else {
+        $('.loggedOut').hide();
+        $('.loggedIn').show();
+        $('#loginLink').html('<span id="loggedIcon" class="glyphicon glyphicon-log-out"></span> UID' + uid + '- Log out');
+    }
 }
 
 window.onload = setup();
